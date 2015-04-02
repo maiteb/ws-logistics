@@ -40,47 +40,18 @@ public class GraphBuilder implements Builder<Graph> {
 	 * Specify a path
 	 * 
 	 * @param path
-	 *            path formatted like A B 5 or C E 6
+	 *            path formatted like AB5 or CE6
 	 * @return {@link GraphBuilder}
 	 */
 	public GraphBuilder withPath(String path) {
-		String sanitizedPath = sanizitize(path);
-		if (validatePath(sanitizedPath)) {
-			char[] splittedPath = new char[PATH_CONFIGURATION_LENGTH];
-			sanitizedPath.getChars(0, PATH_CONFIGURATION_LENGTH, splittedPath, 0);
-			String sourceNode = Character
-					.toString(splittedPath[SOURCE_NODE_INDEX]);
-			String destinationNode = Character
-					.toString(splittedPath[DESTINATION_NODE_INDEX]);
-			int distance = Integer.parseInt(Character
-					.toString(splittedPath[DISTANCE_INDEX]));
-			links.add(aLink().from(sourceNode).to(destinationNode)
-					.distance(distance).build());
-			return this;
-		} else {
-			throw new RuntimeException("Given path must have 3 characters.");
-		}
-	}
+		String[] splittedPath = path.split(" ");
+		String sourceNode = splittedPath[SOURCE_NODE_INDEX];
+		String destinationNode = splittedPath[DESTINATION_NODE_INDEX];
+		int distance = Integer.parseInt((splittedPath[DISTANCE_INDEX]));
+		links.add(aLink().from(sourceNode).to(destinationNode)
+				.distance(distance).build());
+		return this;
 
-	/**
-	 * Remove all the white spaces
-	 * @param path 
-	 * @return
-	 */
-	private String sanizitize(String path) {
-		return path.replaceAll("\\s+","");
-	}
-
-	/**
-	 * Checks if the path is well formed.
-	 * 
-	 * @param path
-	 *            path
-	 * @return <code>true</code> if the path is well formed, <code>false</code>
-	 *         otherwise
-	 */
-	private boolean validatePath(String path) {
-		return path.length() == PATH_CONFIGURATION_LENGTH;
 	}
 
 	/**

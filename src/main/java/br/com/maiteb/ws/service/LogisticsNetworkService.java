@@ -24,5 +24,13 @@ public class LogisticsNetworkService {
 		}
 				
 	}
+	
+	public LogisticsNetwork findByName(String name) {
+		try {
+			return logisticsNetworkRepository.findByName(name);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 		
 }

@@ -11,10 +11,15 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import br.com.maiteb.ws.structure.Graph;
@@ -27,13 +32,49 @@ public class LogisticsNetworkRepository {
 
 	@Autowired
 	private File dbFolder;
-	
-	public List<LogisticsNetwork> getAll() {
+
+	private Map<String, LogisticsNetwork> logisticsNetworkCache = new HashMap<String, LogisticsNetwork>();
+
+	@PostConstruct
+	public void initCache() {
+		logisticsNetworkCache = getAll().stream().collect(
+				Collectors.toMap(LogisticsNetwork::getName, (c) -> c));
+	}
+
+	public LogisticsNetwork create(String name, List<Link> links)
+			throws IOException {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
+				dbFolder, name)))) {
+			for (Link link : links) {
+				bw.write(link.toString());
+				bw.newLine();
+			}
+			bw.flush();
+		}
+		LogisticsNetwork logisticsNetwork = new LogisticsNetwork(name,
+				new Graph(links));
+		logisticsNetworkCache.put(name, logisticsNetwork);
+		return logisticsNetwork;
+
+	}
+
+	public LogisticsNetwork findByName(String name) throws IOException {
+		Optional<LogisticsNetwork> logisticsNetwork = Optional
+				.ofNullable(logisticsNetworkCache.getOrDefault(name,
+						read(new File(dbFolder, name))));
+		if (!logisticsNetwork.isPresent()) {
+			throw new RuntimeException("Cadê a rede?");
+
+		}
+		return logisticsNetwork.get();
+	}
+
+	private List<LogisticsNetwork> getAll() {
 		List<LogisticsNetwork> allNetworks = new ArrayList<LogisticsNetwork>();
 		try {
 			allNetworks = readNetworkFiles();
 		} catch (IOException e) {
-			// print an error please
+			throw new RuntimeException("Cadê as redes?");
 		}
 
 		return allNetworks;
@@ -45,7 +86,7 @@ public class LogisticsNetworkRepository {
 		DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbPath);
 		dirStream.forEach(p -> {
 			try {
-				read(p.toFile(), allNetworks);
+				allNetworks.add(read(p.toFile()));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -53,30 +94,14 @@ public class LogisticsNetworkRepository {
 		return allNetworks;
 	}
 
-	private void read(File file, List<LogisticsNetwork> allNetworks)
-			throws IOException {
+	private LogisticsNetwork read(File file) throws IOException {
 		String fileName = file.getName();
+		GraphBuilder graphBuilder = GraphBuilder.aGraph();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			GraphBuilder graphBuilder = GraphBuilder.aGraph();
-			
 			reader.lines().forEach(line -> graphBuilder.withPath(line));
-			
-			allNetworks.add(new LogisticsNetwork(fileName, graphBuilder.build()));
 		}
-		
-	}
+		return new LogisticsNetwork(fileName, graphBuilder.build());
 
-	public LogisticsNetwork create(String name, List<Link> links) throws IOException {
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(dbFolder, name)))) {
-			for (Link link : links) {
-				bw.write(link.toString());
-				bw.newLine();
-			}
-			bw.flush();
-		}
-		LogisticsNetwork logisticsNetwork = new LogisticsNetwork(name, new Graph(links));
-		return logisticsNetwork;
-		
 	}
 
 }
