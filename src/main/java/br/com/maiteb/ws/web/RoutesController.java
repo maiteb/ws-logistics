@@ -20,8 +20,9 @@ public class RoutesController {
 	public @ResponseBody RouteVO getARoute(@RequestParam("net") String network,
 			@RequestParam("source") String source,
 			@RequestParam("destination") String destination,
-			@RequestParam("autonomy") String autonomy) {
-				return null;
+			@RequestParam("autonomy") int autonomy,
+			@RequestParam("costPerLiter") double costPerLiter) {
+				return service.calculateRoute(network, source, destination, autonomy, costPerLiter);
 
 	}
 

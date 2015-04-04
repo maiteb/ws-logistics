@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.print.attribute.standard.Destination;
+
+import br.com.maiteb.ws.structure.network.LogisticsNetwork;
 
 /**
  * Class that represents a graph.
@@ -107,24 +110,20 @@ public class Graph {
 	}
 
 	/**
-	 * Get all possible destinations and distance between them from a source
+	 * Get all possible destinations and liters between them from a source
 	 * 
 	 * @param sourceNode
 	 *            source node
 	 * @return {@link Map<String,Integer> that represents all the destinations
-	 *         and the distance between them.
+	 *         and the liters between them.
 	 */
-	public Map<String, Integer> getPossiblesDestinationsWithDistanceFrom(
-			String sourceNode) {
+	public Map<String, Double> getPossiblesDestinationsWithDistanceFrom(
+			String sourceNode, int autonomy) {
 		List<Link> linksFromSource = getLinksFromSource(sourceNode);
-		Map<String, Integer> mapDestinationDistance = new HashMap<String, Integer>();
-		if (!linksFromSource.isEmpty()) {
-			for (Link link : linksFromSource) {
-				mapDestinationDistance.put(link.getDestinationNode(),
-						link.getDistance());
-			}
-		}
-		return mapDestinationDistance;
+
+		return linksFromSource.stream().collect(
+				Collectors.toMap(Link::getDestinationNode,
+						(c) -> c.getLiter(autonomy)));
 	}
 
 }

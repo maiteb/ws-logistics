@@ -1,5 +1,7 @@
 package br.com.maiteb.ws.structure;
 
+import java.math.BigDecimal;
+
 /**
  * Class that represents a link between two nodes
  * 
@@ -30,14 +32,10 @@ public class Link {
 		this.destinationNode = destinationNode;
 		this.distance = distance;
 	}
-	
-	
 
 	public Link() {
 		super();
 	}
-
-
 
 	/**
 	 * @return the sourceNode
@@ -70,6 +68,10 @@ public class Link {
 	 */
 	public boolean isToDestination(String destinationNode) {
 		return destinationNode.equals(this.getDestinationNode());
+	}
+
+	public double getLiter(int autonomy) {
+		return (double) distance / (double) autonomy;
 	}
 
 	/**
