@@ -4,13 +4,13 @@ Este é um projeto para calcular a distância com menor custo entre dois pontos,
 
 É um projeto WEB Java 8, para executá-lo deve-se primeiro construir o projeto com Maven:
 
-* mvn clean install eclipse:eclipse
+**mvn clean install eclipse:eclipse**
 
 Utilizando o Tomcat 8, deve-se deployar o arquivo ws-logistics.war
 
 Existem dois serviços REST:
 
-* POST http://localhost:[TOMCAT_PORT]/wslogistics/logisticsNetwork/new
+**POST http://localhost:[TOMCAT_PORT]/wslogistics/logisticsNetwork/new**
 
 O primeiro recebe um JSON do seguinte formato:
 
@@ -49,7 +49,7 @@ O primeiro recebe um JSON do seguinte formato:
 
 Ele armazenará a rede em um arquivo salvo em (user.dir)/networks e em um cache. Toda vez que a aplicação é inicializada, o cache é carregado com todos os arquivos especificados.
 
-* GET http://localhost:[TOMCAT_PORT]/wslogistics/route?net=SP&source=A&destination=D&autonomy=10&costPerLiter=2.5
+**GET http://localhost:[TOMCAT_PORT]/wslogistics/route?net=SP&source=A&destination=D&autonomy=10&costPerLiter=2.5**
 
 Este segundo é um exemplo da chamada para o serviço para calcular efetivamente uma rota, passando como parâmetros:
 
