@@ -70,6 +70,12 @@ public class Link {
 		return destinationNode.equals(this.getDestinationNode());
 	}
 
+	/**
+	 * Calculate liters to use
+	 * 
+	 * @param autonomy vehicle autonomy
+	 * @return liters to use
+	 */
 	public double getLiter(int autonomy) {
 		return (double) distance / (double) autonomy;
 	}
@@ -80,6 +86,52 @@ public class Link {
 	@Override
 	public String toString() {
 		return String.format("%s %s %d", sourceNode, destinationNode, distance);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((destinationNode == null) ? 0 : destinationNode.hashCode());
+		result = prime * result + distance;
+		result = prime * result
+				+ ((sourceNode == null) ? 0 : sourceNode.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Link other = (Link) obj;
+		if (destinationNode == null) {
+			if (other.destinationNode != null)
+				return false;
+		} else if (!destinationNode.equals(other.destinationNode))
+			return false;
+		if (distance != other.distance)
+			return false;
+		if (sourceNode == null) {
+			if (other.sourceNode != null)
+				return false;
+		} else if (!sourceNode.equals(other.sourceNode))
+			return false;
+		return true;
 	}
 
 }

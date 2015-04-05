@@ -27,6 +27,12 @@ import br.com.maiteb.ws.structure.Link;
 import br.com.maiteb.ws.structure.builder.GraphBuilder;
 import br.com.maiteb.ws.structure.network.LogisticsNetwork;
 
+
+/**
+ * Repository of {@link LogisticsNetwork}, responsible for manipulate the database
+ * @author Maitê Balhester
+ *
+ */
 @Repository
 public class LogisticsNetworkRepository {
 
@@ -35,12 +41,22 @@ public class LogisticsNetworkRepository {
 
 	private Map<String, LogisticsNetwork> logisticsNetworkCache = new HashMap<String, LogisticsNetwork>();
 
+	/**
+	 * Initializes the  {@link LogisticsNetwork} cache
+	 */
 	@PostConstruct
 	public void initCache() {
 		logisticsNetworkCache = getAll().stream().collect(
-				Collectors.toMap(LogisticsNetwork::getName, (c) -> c));
+				Collectors.toMap(LogisticsNetwork::getName, (network) -> network));
 	}
 
+	/**
+	 * Create a new {@link LogisticsNetwork}
+	 * @param name network name
+	 * @param links network links
+	 * @return {@link LogisticsNetwork}
+	 * @throws IOException if it cannot write the respective file
+	 */
 	public LogisticsNetwork create(String name, List<Link> links)
 			throws IOException {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
@@ -58,28 +74,43 @@ public class LogisticsNetworkRepository {
 
 	}
 
+	
+	/**
+	 * Find a {@link LogisticsNetwork} with given name
+	 * @param name network name
+	 * @return {@link LogisticsNetwork} founded
+	 * @throws IOException if it cannot find or read the respective file
+	 */
 	public LogisticsNetwork findByName(String name) throws IOException {
 		Optional<LogisticsNetwork> logisticsNetwork = Optional
 				.ofNullable(logisticsNetworkCache.getOrDefault(name,
 						read(new File(dbFolder, name))));
 		if (!logisticsNetwork.isPresent()) {
-			throw new RuntimeException("Cadê a rede?");
-
+			throw new RuntimeException("Could not find a logistics network with given name");
 		}
 		return logisticsNetwork.get();
 	}
 
+	/**
+	 * Get all {@link LogisticsNetwork} registered
+	 * @return {@link List} of {@link LogisticsNetwork}
+	 */
 	private List<LogisticsNetwork> getAll() {
 		List<LogisticsNetwork> allNetworks = new ArrayList<LogisticsNetwork>();
 		try {
 			allNetworks = readNetworkFiles();
 		} catch (IOException e) {
-			throw new RuntimeException("Cadê as redes?");
+			throw new RuntimeException("Could not find any logistics network");
 		}
 
 		return allNetworks;
 	}
 
+	/**
+	 * Read all logistics network files
+	 * @return {@link List} of {@link LogisticsNetwork}
+	 * @throws IOException if it cannot read some file
+	 */
 	private List<LogisticsNetwork> readNetworkFiles() throws IOException {
 		List<LogisticsNetwork> allNetworks = new ArrayList<LogisticsNetwork>();
 		Path dbPath = FileSystems.getDefault().getPath(dbFolder.getPath());
@@ -94,6 +125,12 @@ public class LogisticsNetworkRepository {
 		return allNetworks;
 	}
 
+	/**
+	 * Read one  {@link LogisticsNetwork} file
+	 * @param file {@link File} of some {@link LogisticsNetwork}
+	 * @return {@link LogisticsNetwork}
+	 * @throws IOException if it cannot read the respective file
+	 */
 	private LogisticsNetwork read(File file) throws IOException {
 		String fileName = file.getName();
 		GraphBuilder graphBuilder = GraphBuilder.aGraph();

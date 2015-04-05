@@ -10,12 +10,26 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.maiteb.ws.service.RouteService;
 import br.com.maiteb.ws.web.vo.RouteVO;
 
+/**
+ * {@link RestController} that receives a route solicitation
+ * @author Maitê Balhester
+ *
+ */
 @RestController
 public class RoutesController {
 
 	@Autowired
 	private RouteService service;
 
+	/**
+	 * Get a route
+	 * @param network name of logistics network
+	 * @param source initial node
+	 * @param destination end node
+	 * @param autonomy vehicle autonomy
+	 * @param costPerLiter cost per gas liter
+	 * @return {@link RouteVO} with path and cost
+	 */
 	@RequestMapping(method = RequestMethod.GET, produces = "application/json", value = "/route")
 	public @ResponseBody RouteVO getARoute(@RequestParam("net") String network,
 			@RequestParam("source") String source,

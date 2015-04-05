@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.print.attribute.standard.Destination;
 
+import br.com.maiteb.ws.structure.builder.LinkBuilder;
 import br.com.maiteb.ws.structure.network.LogisticsNetwork;
 
 /**
@@ -40,6 +41,7 @@ public class Graph {
 						Collections.singletonList(link));
 				sourceNodeLinksMap.put(sourceNode, sourceNodeLinks);
 			}
+		
 		}
 
 	}
@@ -56,58 +58,8 @@ public class Graph {
 				new ArrayList<Link>());
 	}
 
-	/**
-	 * Checks if this graph contains some node
-	 * 
-	 * @param node
-	 *            node
-	 * @return <code>true</code> if this graph contains the given node,
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean containsNode(String node) {
-		return sourceNodeLinksMap.containsKey(node);
-	}
 
-	/**
-	 * Get the distance of a {@link Link} connecting two nodes
-	 * 
-	 * @param sourceNode
-	 *            source node
-	 * @param destinationNode
-	 *            {@link Destination}
-	 * @return distance between the two nodes or -1 if didn't exist a link
-	 *         connecting the nodes
-	 */
-	public int getDistanceOfLink(String sourceNode, String destinationNode) {
-		List<Link> linksFromSource = getLinksFromSource(sourceNode);
-		if (!linksFromSource.isEmpty()) {
-			for (Link link : linksFromSource) {
-				if (link.isToDestination(destinationNode)) {
-					return link.getDistance();
-				}
-			}
-		}
-		return -1;
-	}
 
-	/**
-	 * Get all possible destinations from a source
-	 * 
-	 * @param sourceNode
-	 *            source node
-	 * @return {@link List} of {@link String} that represents all the
-	 *         destinations
-	 */
-	public List<String> getPossiblesDestinationsFrom(String sourceNode) {
-		List<Link> linksFromSource = getLinksFromSource(sourceNode);
-		ArrayList<String> possiblesDestinations = new ArrayList<String>();
-		if (!linksFromSource.isEmpty()) {
-			for (Link link : linksFromSource) {
-				possiblesDestinations.add(link.getDestinationNode());
-			}
-		}
-		return possiblesDestinations;
-	}
 
 	/**
 	 * Get all possible destinations and liters between them from a source
@@ -117,7 +69,7 @@ public class Graph {
 	 * @return {@link Map<String,Integer> that represents all the destinations
 	 *         and the liters between them.
 	 */
-	public Map<String, Double> getPossiblesDestinationsWithDistanceFrom(
+	public Map<String, Double> getPossiblesDestinationsWithCostFrom(
 			String sourceNode, int autonomy) {
 		List<Link> linksFromSource = getLinksFromSource(sourceNode);
 

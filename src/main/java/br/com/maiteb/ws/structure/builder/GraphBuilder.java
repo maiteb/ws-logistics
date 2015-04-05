@@ -17,7 +17,6 @@ import br.com.maiteb.ws.structure.api.Builder;
  */
 public class GraphBuilder implements Builder<Graph> {
 
-	private static final int PATH_CONFIGURATION_LENGTH = 3;
 
 	private static final int SOURCE_NODE_INDEX = 0;
 

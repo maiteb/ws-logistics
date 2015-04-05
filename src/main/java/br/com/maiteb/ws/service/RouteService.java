@@ -16,12 +16,28 @@ import br.com.maiteb.ws.structure.Graph;
 import br.com.maiteb.ws.structure.network.LogisticsNetwork;
 import br.com.maiteb.ws.web.vo.RouteVO;
 
+/**
+ * Service responsible for calculate routes
+ * 
+ * @author Maitê Balhester
+ *
+ */
 @Component
 public class RouteService {
 
 	@Autowired
 	private LogisticsNetworkService logisticsNetworkService;
 
+	
+	/**
+	 * Calculate the shortest route based on minimum cost of gas, using given parameters
+	 * @param network {@link LogisticsNetwork} 
+	 * @param source initial node
+	 * @param destination end node
+	 * @param autonomy autonomy of the vehicle
+	 * @param costPerLiter cost per gas liter
+	 * @return 
+	 */
 	public RouteVO calculateRoute(String network, String source,
 			String destination, int autonomy, double costPerLiter) {
 		LogisticsNetwork logisticsNetwork = logisticsNetworkService.findByName(network);
@@ -40,7 +56,7 @@ public class RouteService {
 	/**
 	 * Calculate, recursively, the shortest route between two nodes.
 	 * 
-	 * @param g
+	 * @param network
 	 *            {@link Graph}
 	 * @param startNode
 	 *            start node
@@ -53,9 +69,10 @@ public class RouteService {
 	 *            recursion long.
 	 * @return shortest route
 	 */
-	private double recursivelyCalculateShortestRoute(Graph g,
+	private double recursivelyCalculateShortestRoute(Graph network,
 			String startNode, String endNode, int autonomy, double actualLength,
 			MinimumRoute minCost, String path) {
+		
 		if (actualLength >= minCost.getValue()) {
 			return minCost.getValue();
 		}
@@ -64,14 +81,14 @@ public class RouteService {
 			minCost.setValue(actualLength);
 			return minCost.getValue();
 		}
-		Map<String, Double> mapDestinationDistance = g
-				.getPossiblesDestinationsWithDistanceFrom(startNode, autonomy);
+		Map<String, Double> mapDestinationDistance = network
+				.getPossiblesDestinationsWithCostFrom(startNode, autonomy);
 
 		double minRoute = minCost.getValue();
 		Set<Entry<String, Double>> orderedSet = orderDestination(mapDestinationDistance);
 		for (Entry<String, Double> newStop : orderedSet) {
 			String node = newStop.getKey();
-			minRoute = recursivelyCalculateShortestRoute(g, node,
+			minRoute = recursivelyCalculateShortestRoute(network, node,
 					endNode, autonomy, actualLength + newStop.getValue(), minCost, concatPath(path, node));
 		}
 		return minRoute;
@@ -80,6 +97,12 @@ public class RouteService {
 
 
 
+	/**
+	 * Concatenate the new node to path
+	 * @param path path
+	 * @param node new node
+	 * @return {@link String} that represents all path
+	 */
 	private String concatPath(String path, String node) {
 		return path + ", " + node;
 	}
@@ -115,7 +138,7 @@ public class RouteService {
 	 * @author Maitê Balhester
 	 *
 	 */
-	private static class MinimumRoute {
+	private class MinimumRoute {
 
 		private double value = Double.MAX_VALUE;
 		
@@ -140,14 +163,22 @@ public class RouteService {
 		}
 
 
+		/**
+		 * @return the path
+		 */
 		public String getPath() {
 			return path;
 		}
 
 
+		/**
+		 * @param path the path to set
+		 */
 		public void setPath(String path) {
 			this.path = path;
 		}
+
+
 
 		
 		

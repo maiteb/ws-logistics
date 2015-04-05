@@ -14,16 +14,25 @@ import br.com.maiteb.ws.service.LogisticsNetworkService;
 import br.com.maiteb.ws.structure.network.LogisticsNetwork;
 import br.com.maiteb.ws.web.vo.LogisticsNetworkVO;
 
-
+/**
+ * {@link RestController} for register a {@link LogisticsNetwork}
+ * @author Maitê Balhester
+ *
+ */
 @RestController
 public class LogisticsNetworkController {
 	
 	@Autowired
 	private LogisticsNetworkService service;
 
+	/**
+	 * Create a new {@link LogisticsNetwork}
+	 * @param vo {@link LogisticsNetworkVO} received
+	 * @return {@link ResponseEntity} with respective {@link HttpStatus} 
+	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", value = "/logisticsNetwork/new")
 	public ResponseEntity<String> newLogisticsNetwork(@RequestBody LogisticsNetworkVO vo) {
-		Optional<LogisticsNetwork> aLogisticsNetwork = Optional.ofNullable(service.createNewLogisticNetwork(vo.getName(), vo.getLinks()));
+		Optional<LogisticsNetwork> aLogisticsNetwork = Optional.ofNullable(service.createNewLogisticsNetwork(vo.getName(), vo.getLinks()));
 		if (aLogisticsNetwork.isPresent()) {
 				return new ResponseEntity<String>("Logistics network created with success", HttpStatus.CREATED);
 			} else {
